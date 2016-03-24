@@ -86,7 +86,7 @@ def flake8_on_files(files, commit):
                 "line": line_number,
                 "message": "[{0}] {1}".format(code, text)
             })
-    if len(review["comments"]):
+    if "comments" in review and len(review["comments"]):
         review["message"] = "[FLAKE8] Some issues found."
     else:
         review["message"] = "[FLAKE8] No issues found. OK"
