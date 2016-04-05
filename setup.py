@@ -16,7 +16,7 @@
 from setuptools import setup, find_packages
 
 setup(name='gerrit-check',
-      version='0.1',
+      version='0.1.1',
       description='Line annotations for syntax checkers for Gerrit',
       author='Martin Grund',
       author_email='grundprinzip@gmail.com',
