@@ -106,7 +106,7 @@ def cppcheck_on_files(files, commit):
 
     # Each line in the output is an issue
     review = {}
-    _, _, err = cppcheck_cmd.run(filter_files(files))
+    _, _, err = cppcheck_cmd.run(filter_files(files), retcode=None)
     if len(err) > 0:
         review["message"] = "[CPPCHECK] Some issues need to be fixed."
 
