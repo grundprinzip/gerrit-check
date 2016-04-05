@@ -21,7 +21,7 @@ setup(name='gerrit-check',
       author='Martin Grund',
       author_email='grundprinzip@gmail.com',
       url="https://github.com/grundprinzip/gerrit-check",
-      platforms=("linux", ),
+      platforms=("Linux", ),
       long_description="""
 Many projects use Gerrit for code-reviews and in addition use static code
 analysis tools to report about the quality of the code in review. For example,
