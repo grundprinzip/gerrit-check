@@ -11,14 +11,18 @@
 # on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
 # express or implied. See the License for the specific language governing
 # permissions and limitations under the License.
+from __future__ import absolute_import, print_function
 
 from collections import defaultdict
 from plumbum import local, SshMachine
-
-from flake8.engine import  get_style_guide
+from flake8.engine import get_style_guide
 
 import argparse
-import exceptions
+try:
+    from exceptions import RuntimeError
+except:
+    # In Python3 all exceptions are built-in
+    pass
 import json
 import os
 import sys
@@ -33,7 +37,7 @@ DEFAULT_CPPLINT_FILTER_OPTIONS=("-legal/copyright", "-build/include_order")
 # Prepare global git cmd
 git = local["git"]
 
-class GerritCheckExecption(exceptions.RuntimeError):
+class GerritCheckExecption(RuntimeError):
     pass
 
 def extract_files_for_commit(rev):
@@ -222,7 +226,7 @@ def main():
     for t in args.tool:
         result = CHECKER_MAPPING[t](modified_files, current_hash)
         if args.local:
-            print json.dumps(json.loads(result))
+            print (json.dumps(json.loads(result)))
         else:
             submit_review(args.commit, args.user,
                           args.gerrit_host, result, args.port)
