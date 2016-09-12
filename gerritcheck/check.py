@@ -110,7 +110,7 @@ def cppcheck_on_files(files, commit):
 
     # Each line in the output is an issue
     review = {}
-    _, _, err = cppcheck_cmd.run(filter_files(files), retcode=None)
+    rc, out, err = cppcheck_cmd.run(filter_files(files), retcode=None)
     if len(err) > 0:
         review["message"] = "[CPPCHECK] Some issues need to be fixed."
 
@@ -132,6 +132,10 @@ def cppcheck_on_files(files, commit):
         if len(review["comments"]):
             review["labels"] = {"Code-Review": -1}
             return json.dumps(review)
+
+    if rc != 0:
+        review["message"] = "[CPPCHECK] failed to run checks: " + out
+        return json.dumps(review)
 
     # Add a review comment that no issues have been found
     review["message"] = "[CPPCHECK] No issues found. OK"
