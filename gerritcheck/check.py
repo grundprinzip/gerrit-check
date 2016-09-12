@@ -24,6 +24,7 @@ except:
     # In Python3 all exceptions are built-in
     pass
 import json
+import multiprocessing
 import os
 import sys
 
@@ -105,7 +106,7 @@ def cppcheck_on_files(files, commit):
     """
     cppcheck_cmd = local["cppcheck"][
         "--quiet",
-        "-j 5",
+        "-j %d" % (multiprocessing.cpu_count() * 2),
         "--template={file}###{line}###{severity}###{message}"]
 
     # Each line in the output is an issue
