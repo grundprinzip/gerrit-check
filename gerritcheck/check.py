@@ -30,7 +30,9 @@ import sys
 
 
 
-CPP_FILES = (".h", ".hpp", ".c", ".cc", ".cpp")
+CPP_HEADER_FILES = (".h", ".hpp")
+CPP_SOURCE_FILES = (".c", ".cc", ".cpp")
+CPP_FILES = CPP_HEADER_FILES + CPP_SOURCE_FILES
 
 # Default cpplint options that are passed on during the execution
 DEFAULT_CPPLINT_FILTER_OPTIONS=("-legal/copyright", "-build/include_order")
@@ -111,7 +113,8 @@ def cppcheck_on_files(files, commit):
 
     # Each line in the output is an issue
     review = {}
-    _, _, err = cppcheck_cmd.run(filter_files(files), retcode=None)
+    _, _, err = cppcheck_cmd.run(filter_files(files, CPP_SOURCE_FILES),
+                                 retcode=None)
     if len(err) > 0:
         review["message"] = "[CPPCHECK] Some issues need to be fixed."
 
