@@ -17,6 +17,8 @@ from collections import defaultdict
 from plumbum import local, SshMachine
 from flake8.engine import get_style_guide
 
+# Subprocess is used to address https://github.com/tomerfiliba/plumbum/issues/295
+from subprocess import Popen, PIPE
 import argparse
 try:
     from exceptions import RuntimeError
@@ -47,13 +49,16 @@ def extract_files_for_commit(rev):
     """
     :return: A list of files that where modified in revision 'rev'
     """
-    result = git.popen(("diff-tree", "--no-commit-id", "--name-only", "-r", str(rev)))
-    rc  = result.wait()
-    if rc != 0:
+    diff = Popen(["git", "diff-tree", "--no-commit-id", "--name-only", "-r", str(rev)],
+            stdout=PIPE)
+
+    out, err = diff.communicate()
+
+    if err:
         raise GerritCheckExecption("Could not run diff on current revision. "
                                    "Make sure that the current revision has a "
-                                   "parent.")
-    return [f[0].strip() for f in result if len(f[0].strip())]
+                                   "parent:" + err)
+    return [f.strip() for f in out.splitlines() if len(f)]
 
 
 def filter_files(files, suffix=CPP_FILES):
