@@ -120,8 +120,8 @@ def cppcheck_on_files(files, commit):
 
     # Each line in the output is an issue
     review = {}
-    _, _, err = cppcheck_cmd.run(filter_files(files, CPP_SOURCE_FILES),
-                                 retcode=None)
+    rc, out, err = cppcheck_cmd.run(filter_files(files, CPP_SOURCE_FILES),
+                                    retcode=None)
     if len(err) > 0:
         review["message"] = "[CPPCHECK] Some issues need to be fixed."
 
@@ -144,6 +144,12 @@ def cppcheck_on_files(files, commit):
             review["labels"] = {"Code-Review": -1}
             return json.dumps(review)
 
+    # Check the return code only just now as cppcheck might still have returned
+    # some valid comments.
+    if rc != 0:
+        review["message"] = "[CPPCHECK] Did not complete successfully: " + out
+        return json.dumps(review)
+
     # Add a review comment that no issues have been found
     review["message"] = "[CPPCHECK] No issues found. OK"
     return json.dumps(review)
@@ -158,7 +164,7 @@ def cpplint_on_files(files, commit, filters=DEFAULT_CPPLINT_FILTER_OPTIONS):
 
     # Each line in the output is an issue
     review = {}
-    _, _, err = cpplint_cmd.run(filter(os.path.exists, files), retcode=None)
+    rc, out, err = cpplint_cmd.run(filter(os.path.exists, files), retcode=None)
     if len(err) > 0 and len(files):
         review["message"] = "[CPPLINT] Some issues need to be fixed."
         review["comments"] = defaultdict(list)
@@ -184,6 +190,12 @@ def cpplint_on_files(files, commit, filters=DEFAULT_CPPLINT_FILTER_OPTIONS):
         if len(review["comments"]):
             review["labels"] = {"Code-Review": -1}
             return json.dumps(review)
+
+    # Check the return code only just now as cpplint might still have returned
+    # some valid comments.
+    if rc != 0:
+        review["message"] = "[CPPLINT] Did not complete successfully: " + out
+        return json.dumps(review)
 
     # Add a review comment that no issues have been found
     review["message"] = "[CPPLINT] No issues found. OK"
