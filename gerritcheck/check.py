@@ -72,6 +72,8 @@ def filter_files(files, suffix=CPP_FILES):
 def line_part_of_commit(file, line, commit):
     """Helper function that returns true if a particular `line` in a
     particular `file` was last changed in `commit`."""
+    if line == '0': return False
+
     line_val = git("blame", "-l", "-L{0},{0}".format(line), file)
     return line_val.split(" ", 1)[0] == commit
 
