@@ -15,7 +15,7 @@ from __future__ import absolute_import, print_function
 
 from collections import defaultdict
 from plumbum import local, SshMachine
-from flake8.engine import get_style_guide
+from flake8.api.legacy import get_style_guide
 
 # Subprocess is used to address https://github.com/tomerfiliba/plumbum/issues/295
 from subprocess import Popen, PIPE
