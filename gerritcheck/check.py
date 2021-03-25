@@ -19,6 +19,8 @@ from flake8.api.legacy import get_style_guide
 
 # Subprocess is used to address https://github.com/tomerfiliba/plumbum/issues/295
 from subprocess import Popen, PIPE
+from itertools import chain
+
 import argparse
 try:
     from exceptions import RuntimeError
@@ -93,12 +95,18 @@ def flake8_on_files(files, commit):
         if report.total_errors:
             if not "comments" in review:
                 review["comments"] = defaultdict(list)
-            for line_number, offset, code, text, doc in report._deferred_print:
-                if not line_part_of_commit(file, line_number, commit): continue
+
+                manager = report._application.file_checker_manager
+                results_ = chain(*map(lambda c: c.results, manager._all_checkers))
+
+                for code, line_number, column, text, src in results_:
+                    if not line_part_of_commit(file, line_number, commit):
+                        continue
+
                 review["comments"][file].append({
                 "path": file,
                 "line": line_number,
-                "message": "[{0}] {1}".format(code, text)
+                "message": "[{0}] {1}(column: {2})\n+{3}".format(code, text, column, src)
             })
     if "comments" in review and len(review["comments"]):
         review["message"] = "[FLAKE8] Some issues found."
